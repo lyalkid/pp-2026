@@ -1,0 +1,14 @@
+*.db
+
+# виртуальное окружение
+venv/
+.venv/
+
+# мусор Python
+__pycache__/
+*.pyc
+
+# настройки редакторов
+.vscode/
+.idea/
+.DS_Store
