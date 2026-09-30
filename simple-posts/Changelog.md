@@ -5,6 +5,18 @@
 Формат основан на [Keep a Changelog](https://keepachangelog.com/ru/1.1.0/),
 версии нумеруются по [Semantic Versioning](https://semver.org/lang/ru/).
 
+## [Unreleased]
+
+## [1.1.0] - 2026-09-30
+
+### Added
+- AGENTS.md с правилами для ИИ-помощников.
+- CONTRIBUTING.md с инструкцией для тех, кто хочет помочь проекту.
+- RELEASING.md с инструкцией, как выпускать новые версии.
+- LICENSE (MIT).
+- Локализация интерфейса: русский и английский языки.
+- Переключатель языка RU | EN вверху каждой страницы.
+- Словарь переводов `texts` и функция `t()`.
 
 ## [1.0.0] - 2026-09-30
 
@@ -14,8 +26,3 @@
 - Хранение пользователей и постов в SQLite.
 - Публикация постов, которые видят все посетители.
 - Хэширование паролей и защита от SQL-инъекций и XSS.
-
-[Unreleased]: https://github.com/USERNAME/simple-posts/compare/v1.2.0...HEAD
-[1.2.0]: https://github.com/USERNAME/simple-posts/compare/v1.1.0...v1.2.0
-[1.1.0]: https://github.com/USERNAME/simple-posts/compare/v1.0.0...v1.1.0
-[1.0.0]: https://github.com/USERNAME/simple-posts/releases/tag/v1.0.0
