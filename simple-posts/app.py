@@ -6,6 +6,62 @@ import sqlite3
 app = Flask(__name__)
 app.secret_key = "mysecretkey123"
 
+texts = {
+    "ru": {
+        "site_title": "Мой сайт",
+        "hello": "Привет",
+        "logout": "Выйти",
+        "login": "Войти",
+        "register": "Регистрация",
+        "publish": "Опубликовать",
+        "all_posts": "Все посты",
+        "no_posts": "Постов пока нет",
+        "username": "Логин",
+        "password": "Пароль",
+        "do_register": "Зарегистрироваться",
+        "login_title": "Вход",
+        "to_main": "На главную",
+        "fill_all": "Заполните все поля",
+        "user_exists": "Такой пользователь уже есть",
+        "wrong_login": "Неправильный логин или пароль",
+    },
+    "en": {
+        "site_title": "My site",
+        "hello": "Hello",
+        "logout": "Log out",
+        "login": "Log in",
+        "register": "Sign up",
+        "publish": "Publish",
+        "all_posts": "All posts",
+        "no_posts": "No posts yet",
+        "username": "Username",
+        "password": "Password",
+        "do_register": "Sign up",
+        "login_title": "Log in",
+        "to_main": "Home",
+        "fill_all": "Please fill in all fields",
+        "user_exists": "This user already exists",
+        "wrong_login": "Wrong username or password",
+    },
+}
+
+
+def t(key):
+    lang = session.get("lang", "ru")
+    return texts[lang][key]
+
+
+def lang_links():
+    return "<p><a href='/lang/ru'>RU</a> | <a href='/lang/en'>EN</a></p>"
+
+
+@app.route("/lang/<code>")
+def change_lang(code):
+    if code in texts:
+        session["lang"] = code
+    # возвращаемся на ту страницу, где были
+    return redirect(request.referrer or "/")
+
 
 def get_db():
     conn = sqlite3.connect("database.db")
@@ -27,20 +83,21 @@ def index():
     posts = conn.execute("SELECT * FROM posts ORDER BY id DESC").fetchall()
     conn.close()
 
-    html = "<h1>Мой сайт</h1>"
+    html = lang_links()
+    html += "<h1>" + t("site_title") + "</h1>"
 
     if "username" in session:
-        html += "<p>Привет, " + escape(session["username"]) + "! <a href='/logout'>Выйти</a></p>"
+        html += "<p>" + t("hello") + ", " + escape(session["username"]) + "! <a href='/logout'>" + t("logout") + "</a></p>"
         html += "<form method='post' action='/add'>"
         html += "<textarea name='text'></textarea><br>"
-        html += "<button type='submit'>Опубликовать</button>"
+        html += "<button type='submit'>" + t("publish") + "</button>"
         html += "</form>"
     else:
-        html += "<p><a href='/login'>Войти</a> | <a href='/register'>Регистрация</a></p>"
+        html += "<p><a href='/login'>" + t("login") + "</a> | <a href='/register'>" + t("register") + "</a></p>"
 
-    html += "<h2>Все посты</h2>"
+    html += "<h2>" + t("all_posts") + "</h2>"
     if len(posts) == 0:
-        html += "<p>Постов пока нет</p>"
+        html += "<p>" + t("no_posts") + "</p>"
     for post in posts:
         html += "<p><b>" + escape(post["username"]) + "</b>: " + escape(post["text"]) + "</p>"
 
@@ -55,12 +112,12 @@ def register():
         password = request.form["password"]
 
         if username == "" or password == "":
-            message = "Заполните все поля"
+            message = t("fill_all")
         else:
             conn = get_db()
             user = conn.execute("SELECT * FROM users WHERE username = ?", (username,)).fetchone()
             if user:
-                message = "Такой пользователь уже есть"
+                message = t("user_exists")
             else:
                 conn.execute("INSERT INTO users (username, password) VALUES (?, ?)",
                              (username, generate_password_hash(password)))
@@ -69,14 +126,15 @@ def register():
                 return redirect("/login")
             conn.close()
 
-    html = "<h1>Регистрация</h1>"
+    html = lang_links()
+    html += "<h1>" + t("register") + "</h1>"
     html += "<p>" + message + "</p>"
     html += "<form method='post'>"
-    html += "Логин: <input name='username'><br>"
-    html += "Пароль: <input name='password' type='password'><br>"
-    html += "<button type='submit'>Зарегистрироваться</button>"
+    html += t("username") + ": <input name='username'><br>"
+    html += t("password") + ": <input name='password' type='password'><br>"
+    html += "<button type='submit'>" + t("do_register") + "</button>"
     html += "</form>"
-    html += "<a href='/'>На главную</a>"
+    html += "<a href='/'>" + t("to_main") + "</a>"
     return html
 
 
@@ -95,16 +153,17 @@ def login():
             session["username"] = username
             return redirect("/")
         else:
-            message = "Неправильный логин или пароль"
+            message = t("wrong_login")
 
-    html = "<h1>Вход</h1>"
+    html = lang_links()
+    html += "<h1>" + t("login_title") + "</h1>"
     html += "<p>" + message + "</p>"
     html += "<form method='post'>"
-    html += "Логин: <input name='username'><br>"
-    html += "Пароль: <input name='password' type='password'><br>"
-    html += "<button type='submit'>Войти</button>"
+    html += t("username") + ": <input name='username'><br>"
+    html += t("password") + ": <input name='password' type='password'><br>"
+    html += "<button type='submit'>" + t("login") + "</button>"
     html += "</form>"
-    html += "<a href='/'>На главную</a>"
+    html += "<a href='/'>" + t("to_main") + "</a>"
     return html
 
 
